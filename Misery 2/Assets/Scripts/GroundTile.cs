@@ -4,39 +4,42 @@ public class GroundTile : MonoBehaviour
 
 {
     GroundSpawner groundSpawner;
+    [SerializeField] GameObject obstaclePrefab;
+    [SerializeField] GameObject coinPrefab;
+    [SerializeField] GameObject tallObstaclePrefab;
+    [SerializeField] float tallObstacleChance = 0.2f;
     // Start is called before the first frame update
     private void Start()
     {
         groundSpawner = GameObject.FindObjectOfType<GroundSpawner>();
-        SpawnObstacle();
-        SpawnCoins();
+
     }
 
     private void OnTriggerExit(Collider other)
     {
-        groundSpawner.SpawnTile();
-        Destroy(gameObject, 3);
+        groundSpawner.SpawnTile(true);
+        Destroy(gameObject, 2);
     }
 
-    // Update is called once per frame
-    private void Update()
-    {
-        
-    }
 
-    public GameObject obstaclePrefab;
 
-    void SpawnObstacle ()
+    public void SpawnObstacle ()
     {
+        GameObject obstacleToSpawn = obstaclePrefab;
+        float random = Random.Range(0f, 1f);
+        if (random < tallObstacleChance)
+        {
+            obstacleToSpawn = tallObstaclePrefab;
+        }
+
         int obstacleSpawnIndex = Random.Range(2, 5);
         Transform spawnPoint = transform.GetChild(obstacleSpawnIndex).transform;
 
-        Instantiate(obstaclePrefab, spawnPoint.position, Quaternion.identity, transform);
+        Instantiate(obstacleToSpawn, spawnPoint.position, Quaternion.identity, transform);
 
     }
-    public GameObject coinPrefab;
 
-    void SpawnCoins()
+    public void SpawnCoins()
     {
         int coinsToSpawn = 10;
         for (int i = 0; i < coinsToSpawn; i++)
