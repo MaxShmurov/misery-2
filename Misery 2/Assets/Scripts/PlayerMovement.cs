@@ -13,6 +13,10 @@ public class PlayerMovement : MonoBehaviour
 
     public Joystick joystick;
 
+    public Transform groundCheck;
+    public float groundDistance = 0.4f;
+    bool isGrounded;
+
     public float speedIncreasePerPoint = 0.1f;
 
     [SerializeField] float jumpForce = 400f;
@@ -32,12 +36,20 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+
         horizontalInput = joystick.Horizontal;
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (isGrounded)
         {
-            Jump();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Jump();
+            }
         }
+
 
         if (transform.position.y < -5)
         {
@@ -62,7 +74,11 @@ public class PlayerMovement : MonoBehaviour
     {
        float height = GetComponent<Collider>().bounds.size.y;
        bool isGrounded = Physics.Raycast(transform.position, Vector3.down, (height / 2) + 0.1f, groundMask);
-       rb.AddForce(Vector3.up * jumpForce);
+        if (!isGrounded)
+        {
+            return;
+        }
+        rb.AddForce(Vector3.up * jumpForce);
 
     }
 }
